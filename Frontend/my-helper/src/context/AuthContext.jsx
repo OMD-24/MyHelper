@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { MOCK_USERS } from "../data/mockData";
 import toast from "react-hot-toast";
+import api from "../services/api";
 
 const AuthContext = createContext(null);
 
@@ -21,48 +22,33 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (phone, password) => {
-    // Mock: find user
-    const found = MOCK_USERS.find(
-      (u) => u.phone === phone && u.password === password
-    );
-    if (!found) {
-      throw new Error("Invalid phone or password");
-    }
-    const userData = { ...found };
-    delete userData.password;
-    setUser(userData);
-    localStorage.setItem("kaamsetu_user", JSON.stringify(userData));
-    localStorage.setItem("kaamsetu_token", "mock-jwt-token-" + found.id);
-    toast.success(`Welcome back, ${found.name}!`);
-    return userData;
-  };
+  const res = await api.post("/auth/login", {
+    phone,
+    password,
+  });
 
-  const register = async ({ name, phone, password, role }) => {
-    // Mock: check duplicate
-    const exists = MOCK_USERS.find((u) => u.phone === phone);
-    if (exists) {
-      throw new Error("Phone number already registered");
-    }
-    const newUser = {
-      id: "u" + Date.now(),
-      name,
-      phone,
-      role,
-      skills: [],
-      rating: 0,
-      tasksCompleted: 0,
-      tasksPosted: 0,
-      location: null,
-      avatar: null,
-      createdAt: new Date().toISOString(),
-    };
-    MOCK_USERS.push({ ...newUser, password });
-    setUser(newUser);
-    localStorage.setItem("kaamsetu_user", JSON.stringify(newUser));
-    localStorage.setItem("kaamsetu_token", "mock-jwt-token-" + newUser.id);
-    toast.success(`Welcome to KaamSetu, ${name}!`);
-    return newUser;
-  };
+  const { token, user } = res.data;
+
+  setUser(user);
+  localStorage.setItem("kaamsetu_user", JSON.stringify(user));
+  localStorage.setItem("kaamsetu_token", token);
+
+  toast.success(`Welcome back, ${user.name}!`);
+  return user;
+};
+
+  const register = async (data) => {
+  const res = await api.post("/auth/register", data);
+
+  const { token, user } = res.data;
+
+  setUser(user);
+  localStorage.setItem("kaamsetu_user", JSON.stringify(user));
+  localStorage.setItem("kaamsetu_token", token);
+
+  toast.success(`Welcome to KaamSetu, ${user.name}!`);
+  return user;
+};
 
   const logout = () => {
     setUser(null);
