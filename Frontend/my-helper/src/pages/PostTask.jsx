@@ -10,12 +10,14 @@ import {
   HiOutlineCurrencyRupee,
   HiOutlineMapPin,
   HiOutlineBolt,
+  HiOutlineLightBulb,
 } from "react-icons/hi2";
 
 export default function PostTask() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -24,6 +26,9 @@ export default function PostTask() {
     urgency: "NORMAL",
     address: "",
   });
+
+  // 1. Logic to find selected category data for the dynamic tips
+  const selectedCatData = CATEGORIES.find((c) => c.id === form.category);
 
   const update = (field, value) => setForm((p) => ({ ...p, [field]: value }));
 
@@ -58,9 +63,7 @@ export default function PostTask() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 animate-fade-in">
       <div className="mb-8">
-        <h1 className="text-2xl font-extrabold text-gray-900">
-          Post a New Task
-        </h1>
+        <h1 className="text-2xl font-extrabold text-gray-900">Post a New Task</h1>
         <p className="text-gray-500 mt-1 text-sm">
           Describe what you need help with and let the community respond
         </p>
@@ -70,9 +73,7 @@ export default function PostTask() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Task Title *
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Task Title *</label>
             <div className="relative">
               <HiOutlinePencilSquare className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
@@ -80,41 +81,15 @@ export default function PostTask() {
                 value={form.title}
                 onChange={(e) => update("title", e.target.value)}
                 placeholder="e.g. Kitchen tap leaking badly"
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition text-sm"
+                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition text-sm"
                 maxLength={100}
               />
             </div>
-            <p className="text-xs text-gray-400 mt-1">
-              {form.title.length}/100
-            </p>
           </div>
 
-          {/* Description */}
+          {/* Category Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Description *
-            </label>
-            <div className="relative">
-              <HiOutlineDocumentText className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-              <textarea
-                value={form.description}
-                onChange={(e) => update("description", e.target.value)}
-                placeholder="Describe the task in detail. What needs to be done? Any tools or skills needed?"
-                rows={4}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition text-sm resize-none"
-                maxLength={500}
-              />
-            </div>
-            <p className="text-xs text-gray-400 mt-1">
-              {form.description.length}/500
-            </p>
-          </div>
-
-          {/* Category */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Category *
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
               {CATEGORIES.map((cat) => (
                 <button
@@ -134,111 +109,85 @@ export default function PostTask() {
             </div>
           </div>
 
+          {/* Dynamic Description Field with Instructions */}
+          <div>
+            <label className="flex items-center justify-between text-sm font-bold text-gray-700 mb-2">
+              <span>Detailed Requirements *</span>
+              {selectedCatData && (
+                <span className="text-primary-600 text-[10px] uppercase tracking-wider bg-primary-50 px-2 py-0.5 rounded">
+                  Specific for {selectedCatData.label}
+                </span>
+              )}
+            </label>
+            <div className="relative">
+              <HiOutlineDocumentText className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+              <textarea
+                value={form.description}
+                onChange={(e) => update("description", e.target.value)}
+                placeholder={
+                  selectedCatData 
+                    ? `Mention: ${selectedCatData.types?.slice(0, 3).join(", ") || "details"}...` 
+                    : "Describe the task in detail..."
+                }
+                rows={5}
+                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition text-sm"
+              />
+            </div>
+
+            {/* Dynamic Tips Box based on category */}
+            {selectedCatData && selectedCatData.checklist && (
+              <div className="mt-3 p-4 bg-amber-50 rounded-2xl border border-amber-100">
+                <p className="text-xs font-bold text-amber-800 mb-2 flex items-center gap-1">
+                  <HiOutlineLightBulb className="w-4 h-4" /> 
+                  Hiring Specifications for {selectedCatData.label}
+                </p>
+                <ul className="space-y-1.5">
+                  {selectedCatData.checklist.map((item, index) => (
+                    <li key={index} className="text-[11px] text-amber-700 flex items-start gap-2">
+                      <span className="font-bold">{index + 1}.</span> {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
           {/* Budget */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Budget (₹) *
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Budget (₹) *</label>
             <div className="relative">
               <HiOutlineCurrencyRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="number"
                 value={form.budget}
                 onChange={(e) => update("budget", e.target.value)}
-                placeholder="Enter amount in rupees"
-                min={0}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition text-sm"
+                placeholder="Enter amount"
+                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm"
               />
-            </div>
-            <div className="flex gap-2 mt-2">
-              {[100, 200, 500, 1000].map((amt) => (
-                <button
-                  key={amt}
-                  type="button"
-                  onClick={() => update("budget", String(amt))}
-                  className="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-medium hover:bg-gray-200 transition"
-                >
-                  ₹{amt}
-                </button>
-              ))}
             </div>
           </div>
 
           {/* Address */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Location / Address
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
             <div className="relative">
               <HiOutlineMapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
                 value={form.address}
                 onChange={(e) => update("address", e.target.value)}
-                placeholder="e.g. Connaught Place, Delhi"
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition text-sm"
+                placeholder="e.g. Sangli, Maharashtra"
+                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm"
               />
             </div>
           </div>
 
-          {/* Urgency */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              <HiOutlineBolt className="inline w-4 h-4 mr-1" />
-              Urgency Level
-            </label>
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                {
-                  value: "NORMAL",
-                  label: "Normal",
-                  desc: "No rush",
-                  color: "border-green-200 bg-green-50 text-green-700",
-                },
-                {
-                  value: "URGENT",
-                  label: "Urgent",
-                  desc: "Need soon",
-                  color: "border-amber-200 bg-amber-50 text-amber-700",
-                },
-                {
-                  value: "EMERGENCY",
-                  label: "Emergency",
-                  desc: "Right now!",
-                  color: "border-red-200 bg-red-50 text-red-700",
-                },
-              ].map((u) => (
-                <button
-                  key={u.value}
-                  type="button"
-                  onClick={() => update("urgency", u.value)}
-                  className={`p-3 rounded-xl border-2 text-center transition ${
-                    form.urgency === u.value
-                      ? u.color + " shadow-sm"
-                      : "border-gray-100 text-gray-500 hover:border-gray-200"
-                  }`}
-                >
-                  <p className="font-semibold text-sm">{u.label}</p>
-                  <p className="text-xs opacity-75 mt-0.5">{u.desc}</p>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition disabled:opacity-50 shadow-lg text-sm"
+            className="w-full py-4 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition disabled:opacity-50 shadow-lg"
           >
-            {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Posting...
-              </span>
-            ) : (
-              "Post Task"
-            )}
+            {loading ? "Posting..." : "Post Task"}
           </button>
         </form>
       </div>
