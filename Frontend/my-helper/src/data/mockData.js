@@ -1,18 +1,35 @@
 export const CATEGORIES = [
-  { id: "plumbing", label: "Plumbing", icon: "🔧" },
-  { id: "electrical", label: "Electrical", icon: "⚡" },
+  { id: "plumbing", label: "Plumber", icon: "🔧" },
+  { id: "electrical", label: "Electrician", icon: "⚡" },
   { id: "cleaning", label: "Cleaning", icon: "🧹" },
   { id: "delivery", label: "Delivery/Pickup", icon: "📦" },
   { id: "shifting", label: "Shifting/Moving", icon: "🚛" },
   { id: "medical", label: "Medical Help", icon: "🏥" },
-  { id: "gardening", label: "Gardening", icon: "🌱" },
-  { id: "teaching", label: "Teaching", icon: "📚" },
+  { id: "gardening", label: "Gardener", icon: "🌱" },
+  { id: "teaching", label: "Tutor", icon: "📚" },
   { id: "tech", label: "Tech Help", icon: "💻" },
-  { id: "cooking", label: "Cooking", icon: "🍳" },
-  { id: "painting", label: "Painting", icon: "🎨" },
+  { id: "cooking", label: "Cook", icon: "🍳" },
+  { id: "painting", label: "Painter", icon: "🎨" },
+
+  // 🔥 Newly Added Professions
+  { id: "carpenter", label: "Carpenter", icon: "🪚" },
+  { id: "mechanic", label: "Mechanic", icon: "🚗" },
+  { id: "carpainter", label: "Car Painter", icon: "🚘" },
+  { id: "blacksmith", label: "Blacksmith", icon: "⚒️" },
+  { id: "housekeeper", label: "Housekeeper", icon: "🧽" },
+  { id: "nanny", label: "Nanny", icon: "👶" },
+  { id: "eldercare", label: "Senior Care", icon: "👴" },
+  { id: "photography", label: "Photographer", icon: "📸" },
+  { id: "event", label: "Event Planner", icon: "🎉" },
+  { id: "petsitting", label: "Pet Sitting", icon: "🐾" },
+  { id: "pottery", label: "Potter", icon: "🏺" },
+  { id: "dance", label: "Dance Class", icon: "💃" },
+  { id: "yoga", label: "Yoga Class", icon: "🧘" },
+  { id: "drawing", label: "Drawing Class", icon: "🎨" },
+  { id: "sports", label: "Sports Club", icon: "⚽" },
+
   { id: "other", label: "Other", icon: "📋" },
 ];
-
 export const MOCK_USERS = [
   {
     id: "u1",
