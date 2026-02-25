@@ -1,7 +1,53 @@
 package com.kaamsetu.exception;
 
-public class GlobalExceptionHandler extends RuntimeException {
-    public GlobalExceptionHandler(String message) {
-        super(message);
+import com.kaamsetu.dto.ApiResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiResponse> handleNotFound(ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ApiResponse> handleBadRequest(BadRequestException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiResponse> handleBadCredentials(BadCredentialsException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error("Invalid phone or password"));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidation(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach(error -> {
+            String field = ((FieldError) error).getField();
+            String msg = error.getDefaultMessage();
+            errors.put(field, msg);
+        });
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse> handleGeneral(Exception ex) {
+        ex.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error("Something went wrong: " + ex.getMessage()));
     }
 }

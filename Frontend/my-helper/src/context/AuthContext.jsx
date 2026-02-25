@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { MOCK_USERS } from "../data/mockData";
-import toast from "react-hot-toast";
 import api from "../services/api";
+import toast from "react-hot-toast";
 
 const AuthContext = createContext(null);
 
@@ -11,44 +10,80 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const stored = localStorage.getItem("kaamsetu_user");
-    if (stored) {
+    const token = localStorage.getItem("kaamsetu_token");
+
+    if (stored && token) {
       try {
+        // Validate token format (must have 3 parts)
+        if (token.split(".").length !== 3) {
+          throw new Error("Invalid token format");
+        }
         setUser(JSON.parse(stored));
       } catch {
+        // Clear corrupted data
         localStorage.removeItem("kaamsetu_user");
+        localStorage.removeItem("kaamsetu_token");
       }
     }
     setLoading(false);
   }, []);
 
   const login = async (phone, password) => {
-  const res = await api.post("/auth/login", {
-    phone,
-    password,
-  });
+    const res = await api.post("/auth/login", { phone, password });
 
-  const { token, user } = res.data;
+    // Backend returns FLAT object: { token, id, name, phone, role, ... }
+    const data = res.data;
 
-  setUser(user);
-  localStorage.setItem("kaamsetu_user", JSON.stringify(user));
-  localStorage.setItem("kaamsetu_token", token);
+    // Extract user info (everything except token)
+    const userData = {
+      id: data.id,
+      name: data.name,
+      phone: data.phone,
+      role: data.role,
+      skills: data.skills || [],
+      rating: data.rating || 0,
+      tasksCompleted: data.tasksCompleted || 0,
+      createdAt: data.createdAt,
+    };
 
-  toast.success(`Welcome back, ${user.name}!`);
-  return user;
-};
+    setUser(userData);
+    localStorage.setItem("kaamsetu_user", JSON.stringify(userData));
+    localStorage.setItem("kaamsetu_token", data.token);
 
-  const register = async (data) => {
-  const res = await api.post("/auth/register", data);
+    toast.success(`Welcome back, ${userData.name}!`);
+    return userData;
+  };
 
-  const { token, user } = res.data;
+  const register = async ({ name, phone, password, role, skills }) => {
+    const res = await api.post("/auth/register", {
+      name,
+      phone,
+      password,
+      role,
+      skills: skills || [],
+    });
 
-  setUser(user);
-  localStorage.setItem("kaamsetu_user", JSON.stringify(user));
-  localStorage.setItem("kaamsetu_token", token);
+    // Backend returns FLAT object: { token, id, name, phone, role, ... }
+    const data = res.data;
 
-  toast.success(`Welcome to KaamSetu, ${user.name}!`);
-  return user;
-};
+    const userData = {
+      id: data.id,
+      name: data.name,
+      phone: data.phone,
+      role: data.role,
+      skills: data.skills || [],
+      rating: data.rating || 0,
+      tasksCompleted: data.tasksCompleted || 0,
+      createdAt: data.createdAt,
+    };
+
+    setUser(userData);
+    localStorage.setItem("kaamsetu_user", JSON.stringify(userData));
+    localStorage.setItem("kaamsetu_token", data.token);
+
+    toast.success(`Welcome to KaamSetu, ${userData.name}!`);
+    return userData;
+  };
 
   const logout = () => {
     setUser(null);

@@ -1,0 +1,23 @@
+CREATE USER kaamsetu_user WITH PASSWORD 'kaamsetu123';
+
+CREATE DATABASE kaamsetu_db OWNER kaamsetu_user;
+
+GRANT ALL PRIVILEGES ON DATABASE kaamsetu_db TO kaamsetu_user;
+
+ALTER USER kaamsetu_user WITH SUPERUSER;
+
+\q
+
+
+
+
+
+Name     : KaamSetu Local
+Host     : localhost
+Port     : 5432
+Username : kaamsetu_user
+Password : kaamsetu123
+Database : kaamsetu_db
+
+
+

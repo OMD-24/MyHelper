@@ -36,6 +36,7 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!form.name || !form.phone || !form.password || !form.role) {
       toast.error("Please fill all required fields");
       return;
@@ -48,12 +49,34 @@ export default function Register() {
       toast.error("Password must be at least 6 characters");
       return;
     }
+
     setLoading(true);
     try {
-      await register(form);
+      await register({
+        name: form.name.trim(),
+        phone: form.phone,
+        password: form.password,
+        role: form.role,
+        skills: form.role === "WORKER" ? form.skills : [],
+      });
       navigate("/dashboard", { replace: true });
     } catch (err) {
-      toast.error(err.message || "Registration failed");
+      // Show backend error message
+      const data = err.response?.data;
+      let msg = "Registration failed";
+
+      if (typeof data === "string") {
+        msg = data;
+      } else if (data?.message) {
+        msg = data.message;
+      } else if (typeof data === "object") {
+        // Validation errors come as { field: "message" }
+        const firstError = Object.values(data)[0];
+        if (firstError) msg = firstError;
+      }
+
+      toast.error(msg);
+      console.error("Register error:", data || err);
     } finally {
       setLoading(false);
     }
@@ -189,7 +212,7 @@ export default function Register() {
               </div>
             </div>
 
-            {/* Skills - Only for Workers */}
+            {/* Skills */}
             {form.role === "WORKER" && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">

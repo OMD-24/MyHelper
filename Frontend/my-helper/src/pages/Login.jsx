@@ -30,7 +30,13 @@ export default function Login() {
       await login(phone, password);
       navigate(from, { replace: true });
     } catch (err) {
-      toast.error(err.message || "Login failed");
+      const msg =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        err.message ||
+        "Login failed";
+      toast.error(msg);
+      console.error("Login error:", err.response?.data || err);
     } finally {
       setLoading(false);
     }
@@ -46,7 +52,12 @@ export default function Login() {
       await login(creds.phone, creds.pass);
       navigate("/dashboard", { replace: true });
     } catch (err) {
-      toast.error(err.message);
+      const msg =
+        err.response?.data?.message ||
+        err.message ||
+        "Login failed";
+      toast.error(msg);
+      console.error("Demo login error:", err.response?.data || err);
     } finally {
       setLoading(false);
     }
