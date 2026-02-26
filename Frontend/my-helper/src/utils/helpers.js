@@ -14,56 +14,68 @@ export function timeAgo(dateString) {
 }
 
 export function formatCurrency(amount) {
-  return `₹${amount}`;
+  return `₹${Number(amount).toLocaleString("en-IN")}`;
 }
 
-export function getUrgencyColor(urgency) {
+export function getUrgencyConfig(urgency) {
   switch (urgency) {
     case "EMERGENCY":
-      return "bg-red-100 text-red-700 border-red-200";
+      return {
+        bg: "bg-danger-50",
+        text: "text-danger-600",
+        border: "border-danger-200",
+        dot: "bg-danger-500",
+        icon: "🚨",
+        label: "Emergency",
+      };
     case "URGENT":
-      return "bg-amber-100 text-amber-700 border-amber-200";
+      return {
+        bg: "bg-warning-50",
+        text: "text-warning-600",
+        border: "border-warning-200",
+        dot: "bg-warning-500",
+        icon: "⚡",
+        label: "Urgent",
+      };
     default:
-      return "bg-green-100 text-green-700 border-green-200";
+      return {
+        bg: "bg-success-50",
+        text: "text-success-600",
+        border: "border-success-200",
+        dot: "bg-success-500",
+        icon: "✓",
+        label: "Normal",
+      };
   }
 }
 
-export function getStatusColor(status) {
+export function getStatusConfig(status) {
   switch (status) {
     case "OPEN":
-      return "bg-blue-100 text-blue-700";
+      return { bg: "bg-primary-50", text: "text-primary-700", dot: "bg-primary-500", label: "Open" };
     case "ACCEPTED":
-      return "bg-yellow-100 text-yellow-700";
+      return { bg: "bg-warning-50", text: "text-warning-700", dot: "bg-warning-500", label: "Accepted" };
     case "IN_PROGRESS":
-      return "bg-purple-100 text-purple-700";
+      return { bg: "bg-purple-50", text: "text-purple-700", dot: "bg-purple-500", label: "In Progress" };
     case "COMPLETED":
-      return "bg-green-100 text-green-700";
+      return { bg: "bg-success-50", text: "text-success-700", dot: "bg-success-500", label: "Completed" };
     case "CANCELLED":
-      return "bg-gray-100 text-gray-600";
+      return { bg: "bg-surface-100", text: "text-surface-500", dot: "bg-surface-400", label: "Cancelled" };
     default:
-      return "bg-gray-100 text-gray-600";
+      return { bg: "bg-surface-100", text: "text-surface-500", dot: "bg-surface-400", label: status };
   }
 }
 
 export function getCategoryIcon(categoryId) {
   const map = {
-    plumbing: "🔧",
-    electrical: "⚡",
-    cleaning: "🧹",
-    delivery: "📦",
-    shifting: "🚛",
-    medical: "🏥",
-    gardening: "🌱",
-    teaching: "📚",
-    tech: "💻",
-    cooking: "🍳",
-    painting: "🎨",
-    other: "📋",
+    plumbing: "🔧", electrical: "⚡", cleaning: "🧹", delivery: "📦",
+    shifting: "🚛", medical: "🏥", gardening: "🌱", teaching: "📚",
+    tech: "💻", cooking: "🍳", painting: "🎨", other: "📋",
   };
   return map[categoryId] || "📋";
 }
 
 export function truncate(str, len = 80) {
   if (!str) return "";
-  return str.length > len ? str.substring(0, len) + "..." : str;
+  return str.length > len ? str.substring(0, len) + "…" : str;
 }
