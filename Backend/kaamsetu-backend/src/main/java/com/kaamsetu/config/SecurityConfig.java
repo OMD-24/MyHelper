@@ -37,6 +37,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         // Allow auth endpoints
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
 
                         // Everything else needs authentication

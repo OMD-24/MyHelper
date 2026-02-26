@@ -20,7 +20,7 @@ public class WebConfig {
                 "http://localhost:3000",
                 "http://localhost:5173",
                 "http://localhost:5174",
-                "https://your-app.netlify.app"
+                "https://sahayak-app.netlify.app"  // your actual Netlify URL
         ));
 
         // Allow all HTTP methods
