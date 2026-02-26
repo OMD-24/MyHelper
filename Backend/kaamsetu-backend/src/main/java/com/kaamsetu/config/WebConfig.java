@@ -19,7 +19,8 @@ public class WebConfig {
         config.setAllowedOrigins(List.of(
                 "http://localhost:3000",
                 "http://localhost:5173",
-                "http://localhost:5174"
+                "http://localhost:5174",
+                "https://your-app.netlify.app"
         ));
 
         // Allow all HTTP methods
